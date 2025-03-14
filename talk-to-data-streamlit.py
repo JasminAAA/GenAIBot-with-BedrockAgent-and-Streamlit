@@ -18,7 +18,7 @@ AWS_REGION = os.environ.get("AWS_REGION", "eu-central-2")
 BEDROCK_AGENT_ID = os.environ.get("BEDROCK_AGENT_ID")
 BEDROCK_AGENT_ALIAS_ID = os.environ.get("BEDROCK_AGENT_ALIAS_ID")
 
-# Initialize AWS Session (for local testing)
+# Initialize AWS Session
 session = boto3.Session(profile_name=AWS_PROFILE)
 
 # Initialize Bedrock Agent client
