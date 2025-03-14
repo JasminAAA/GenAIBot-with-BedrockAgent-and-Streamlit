@@ -1,22 +1,32 @@
 import os
 
 import streamlit as st
+
+# Streamlit UI
+st.set_page_config(page_title="Bedrock AI Chat", page_icon="💬", layout="centered")
+
 import boto3
 import json
 import time
 import logging
 from botocore.exceptions import BotoCoreError, ClientError
-from botocore.eventstream import EventStream  # ✅ Import EventStream properly
+from botocore.eventstream import EventStream
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Load secrets from Streamlit Cloud (if available), otherwise use local environment variables
+AWS_PROFILE = os.getenv("AWS_PROFILE")
+AWS_REGION = os.getenv("AWS_REGION", "eu-central-2")
+BEDROCK_AGENT_ID = os.getenv("BEDROCK_AGENT_ID")
+BEDROCK_AGENT_ALIAS_ID = os.getenv("BEDROCK_AGENT_ALIAS_ID")
 
-# Read environment variables for aws profile and bedrock agent
-AWS_PROFILE = os.environ.get("AWS_PROFILE")
-AWS_REGION = os.environ.get("AWS_REGION", "eu-central-2")
-BEDROCK_AGENT_ID = os.environ.get("BEDROCK_AGENT_ID")
-BEDROCK_AGENT_ALIAS_ID = os.environ.get("BEDROCK_AGENT_ALIAS_ID")
+#  Handle Streamlit secrets for deployment
+if hasattr(st, "secrets") and st.secrets:
+    AWS_PROFILE = st.secrets["AWS_PROFILE"]
+    AWS_REGION = st.secrets["AWS_REGION"]
+    BEDROCK_AGENT_ID = st.secrets["BEDROCK_AGENT_ID"]
+    BEDROCK_AGENT_ALIAS_ID = st.secrets["BEDROCK_AGENT_ALIAS_ID"]
 
 # Initialize AWS Session
 session = boto3.Session(profile_name=AWS_PROFILE)
@@ -67,9 +77,6 @@ def generate_response_with_agent(prompt, session_id="user-session-123"):
             retry_delay *= 2
 
     return "The Bedrock Agent is currently unavailable. Please try again later."
-
-# Streamlit UI
-st.set_page_config(page_title="Bedrock AI Chat", page_icon="💬", layout="centered")
 
 # Page Styling
 st.markdown("""
